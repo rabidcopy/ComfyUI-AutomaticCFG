@@ -110,7 +110,7 @@ def get_denoised_ranges(latent, measure="hard", top_k=0.25):
     for x in range(len(latent)):
         max_values = torch.topk(latent[x] - latent[x].mean() if measure == "range" else latent[x], k=int(len(latent[x])*top_k), largest=True).values
         min_values = torch.topk(latent[x] - latent[x].mean() if measure == "range" else latent[x], k=int(len(latent[x])*top_k), largest=False).values
-        max_val = torch.mean(max_values).item()
+        max_val = torch.mean(max_values).detach().cpu().numpy()
         min_val = abs(torch.mean(min_values).item()) if measure == "soft" else torch.mean(torch.abs(min_values)).item()
         denoised_range = (max_val + min_val) / 2
         chans.append(denoised_range**2 if measure == "hard_squared" else denoised_range)
